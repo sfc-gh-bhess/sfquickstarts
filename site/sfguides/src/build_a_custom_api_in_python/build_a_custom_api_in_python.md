@@ -20,7 +20,7 @@ The dataset is the [TPC-H](https://docs.snowflake.com/en/user-guide/sample-data-
 
 
 ### Prerequisites
-- Privileges necessary to create a user, database, warehouse, compute pool, repository, network network rule, external access integration, and service in Snowflake
+- Privileges necessary to create a user, database, warehouse, compute pool, repository, network rule, external access integration, and service in Snowflake
 - Privileges necessary to access the tables in the `SNOWFLAKE_SAMPLE_DATA.TPCH_SF10` database and schema
 - Access to run SQL in the Snowflake console or SnowSQL
 - Basic experience using git, GitHub, and Codespaces
@@ -176,7 +176,8 @@ button and select "Import .ipynb file". You will be prompted to choose the file 
 Next, you will be shown a form to collect information about your Notebook. You can choose any name you would like (e.g., `Data API`). 
 Choose the `API` database and the `PUBLIC` schema. Choose "Run on warehouse". Leave all of the other inputs with their defaults.
 
-When the Notebook is created, click the "Start" button on the top.
+When the Notebook is created, click the "Start" button on the top. If you are using the imported Notebook, you can close this 
+Quickstart as the instructions are the same.
 
 <!-- ------------------------ -->
 ## Setting Up A Database and Warehouse
@@ -210,10 +211,10 @@ GRANT ROLE DATA_API_ROLE TO ROLE ACCOUNTADMIN;
 ```
 
 <!-- ------------------------ -->
-## Creating The Image Registry
+## Creating The Image Repository
 Duration: 1
 
-To create the image registry, run the following commands in the Snowflake (in a cell in a Snowflake Notebook, in a Worksheet in the Snowflake console, or using SnowSQL):
+To create the image repository, run the following commands in the Snowflake (in a cell in a Snowflake Notebook, in a Worksheet in the Snowflake console, or using SnowSQL):
 
 ```sql
 USE ROLE ACCOUNTADMIN;
@@ -341,13 +342,13 @@ can take a moment. While it does you will get a note like `Endpoints provisionin
 SHOW ENDPOINTS IN SERVICE API.PUBLIC.API;
 ```
 
-Make note of the `ingress_url` as that will be need to test the application. This service will start the API, running at `https://<INGRESS_URL>`.
+Make note of the `ingress_url` as that will be need to test the application. This service will start the API, running at `https://INGRESS_URL`.
 
 <!-- ------------------------ -->
 ## Testing The API
 Duration: 6
 
-To verify the API is online, go to the `https://<INGRESS_URL>` in your browser. You will be asked to authenticate to Snowflake and be given the root content: 
+To verify the API is online, go to the `https://INGRESS_URL` in your browser. You will be asked to authenticate to Snowflake and be given the root content: 
 
 ```json
 {"result":"Nothing to see here"}
@@ -362,12 +363,12 @@ The ones implemented with Snowpark Python are under the `/snowpark/` route.
 To retrieve the top 10 customers in the date range of `1995-02-01` to `1995-02-14` using the Snowflake Connector for Python, use:
 
 ```
-https://<INGRESS_URL>/connector/customers/top10?start_range=1995-02-01&end_range=1995-02-14
+https://INGRESS_URL/connector/customers/top10?start_range=1995-02-01&end_range=1995-02-14
 ```
 
 To retrieve the top 10 customers in the date range of `1995-02-01` to `1995-02-14` using the Snowflake Snowpark API, use:
 ```
-https://<INGRESS_URL>/snowpark/customers/top10?start_range=1995-02-01&end_range=1995-02-14
+https://INGRESS_URLsnowpark/customers/top10?start_range=1995-02-01&end_range=1995-02-14
 ```
 
 If you call the endpoint without specifying the `start_range` then `1995-01-01` will be used. If you call the endpoint without specifying the `end_range` then `1995-03-31` will be used.
@@ -375,12 +376,12 @@ If you call the endpoint without specifying the `start_range` then `1995-01-01` 
 #### Monthly sales for a given year for a sales clerk
 To retrieve the monthly sales for clerk `000000002` for the year `1995` using the Snowflake Connector for Python, run:
 ```
-https://<INGRESS_URL>/connector/clerk/000000002/yearly_sales/1995
+https://INGRESS_URL/connector/clerk/000000002/yearly_sales/1995
 ```
 
 To retrieve the monthly sales for clerk `000000002` for the year `1995` using the Snowflake Snowpark API, run:
 ```
-https://<INGRESS_URL>/snowpark/clerk/000000002/yearly_sales/1995
+https://INGRESS_URL/snowpark/clerk/000000002/yearly_sales/1995
 ```
 
 ### Testing using a webpage
@@ -431,10 +432,12 @@ IP/hostname origins for your clients.You can do this via SQL as follows:
 
 ```sql
 USE ROLE ACCOUNTADMIN;
+CREATE NETWORK POLICY IF NOT EXISTS api_np ALLOWED_IP_LIST = ('0.0.0.0/0');
+ALTER USER apiuser SET NETWORK_POLICY = api_np;
 ALTER USER IF EXISTS apiuser ADD PROGRAMMATIC ACCESS TOKEN api_token;
 ```
 
-Copy this PAT token and save it to a file. Save it to a file named `apiuser-token-secret.txt` in the `test/` directory of the cloned/downloaded repo.
+Copy this PAT token and save it to a file. Save it to a file named `apiuser-token-secret.txt` in the `test/` directory of the cloned/downloaded repo in Codespaces.
 
 ### Generating a PAT token via Snowsight
 Alternatively, you can use Snowsight to create the PAT token. Click on the "Admin" option on the sidebar, then the "Users & Roles" option in the sidebar.
